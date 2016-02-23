@@ -1,0 +1,112 @@
+\begin{tikzpicture}
+
+% -- Qt classes
+\umlclass[x=-3, y=6]{QObject}{
+- parent : QObject*
+}{}
+
+\umlclass[x=4, y=6]{QStandardItem}{}{
++ QStandardItem(text : QString) \\
+\umlvirt{+ type() : int}
+}
+
+\begin{umlpackage}{q2d}
+	\begin{umlpackage}[x=0]{metamodel}
+
+		\begin{umlpackage}[x=-18]{enums}
+		\umlclass[type=enum]{ElementType}{
+			CATEGORY \\
+			COMPONENT \\
+			CONFIG\_BIT \\
+			CONFIG\_BIT\-GROUP \\
+			FUNCTION \\
+			INVALID \\
+			PORT \\
+		}{}
+		\end{umlpackage} % --- enums
+
+	\umlclass[x=0, y=0, type=abstract]{Element}{
+	}{
+	+ Element(name : QString, parent : Element* = nullptr) \\
+	\umlvirt{+ type() : int}
+	}
+	\umldep{Element}{ElementType}
+	\umlinherit[geometry=|-]{Element}{QObject}	
+	\umlinherit[geometry=|-]{Element}{QStandardItem}
+
+	\umlclass[x=-7, y=-4, type=abstract]{HierarchyElement}{
+	-hierarchyName : QString
+	}{
+	+ HierarchyElement(name : QString, parent : Category* = nullptr) \\
+	}
+	\umlVHVinherit{HierarchyElement}{Element}
+
+	\umlclass[x=7, y=-4, type=abstract]{ComponentElement}{
+	-hierarchyName : QString
+	}{
+	+ ComponentElement(name : QString, parent : ComponentDescriptor* = nullptr) \\
+	}
+	\umlVHVinherit{ComponentElement}{Element}
+
+	\umlclass[x=-17, y= -8]{Category}{}{
+	+ addSubItem(toAdd : HierarcyElement) \\
+	+ type() : int
+	}
+	\umlinherit[geometry=|-|, anchors = east and south]{Category}{HierarchyElement}
+	\umlunicompo
+	[arg1=parent, mult1=*, pos2=1.8, mult2=1, geometry=-| , anchors=west and north]
+	{HierarchyElement}{Category}
+
+	\umlclass[x=-7, y=-8]{ComponentDescriptor}{}{
+	+ addConfigBitGroup(configBitGroup : ConfigBitGroupDescriptor*) \\
+	+ addFunction(function : QString) \\
+	+ addPort(port : PortDescriptor*) \\
+	+ type() : int
+	}
+	\umlinherit[anchors= north and south]{ComponentDescriptor}{HierarchyElement}
+	\umlunicompo
+		[arg1=parent, pos1=0.1, align1=right, mult1=*, 
+		pos2=1.8, align2=left, mult2=1, geometry=-| , anchors=west and north east]
+		{ComponentElement}{ComponentDescriptor}
+
+	\umlclass[x=3, y=-7]{ConfigBitGroupDescriptor}{- memberCount : unsigned}{
+	+ type() : int
+	}
+	\umlVHVinherit[anchors= north and south]
+	{ConfigBitGroupDescriptor}{ComponentElement}
+
+	\umlclass[x=7, y=-9]{ConfigBitDescriptor}{}{
+	+ type() : int
+	}
+	\umlVHVinherit[anchors= north and south]
+	{ConfigBitDescriptor}{ComponentElement}
+	\umldep
+	[anchors = west and south, geometry=-|]
+	{ConfigBitDescriptor}{ConfigBitGroupDescriptor}
+
+	\umlclass[x=10, y=-7]{FunctionDescriptor}{}{
+	+ type() : int
+	}
+	\umlVHVinherit[anchors= north and south]
+	{FunctionDescriptor}{ComponentElement}
+
+	\umlclass[x=15, y=-7]{PortDescriptor}{
+	- direction : PortDirection
+	}{
+	+ type() : int
+	}
+	\umlVHVinherit[anchors= north and south]
+	{PortDescriptor}{ComponentElement}	
+
+	\end{umlpackage} % --- metamodel
+\end{umlpackage} 
+
+\umlclass[x = 15, y=6, type=enum]{PortDirection}{
+			IN \\
+			OUT
+		}{}
+\umlunicompo[anchors= 50 and south, geometry=|-|]{PortDescriptor}{PortDirection}
+
+\umlnote[x=10, y=6]{PortDirection}{namespace q2d::model::enums}
+
+\end{tikzpicture}

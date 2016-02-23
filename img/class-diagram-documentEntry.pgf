@@ -1,0 +1,140 @@
+\begin{tikzpicture}
+
+\draw[draw=none](0,0) rectangle (52, 34);
+
+\umlclass[x=26, y= 30]{QObject}{}{
++ QObject(parent : QObject*)
+}
+
+\begin{umlpackage}{q2d}
+	\umlclass[x=26, y=17]{DocumentEntry}{
+	}{
+	+ DocumentEnty(id : QString, type : DocumentEntryType, $\hookleftarrow$ \\
+	\hspace{1cm}document : Document*, parent : DocumentEntry*) \\
+	+ setModelElement(modelElement : ModelElement*) \\
+	+ setSchematicElement(schematicElement : SchematicElement*) \\
+	+ document() : Document* \\
+	+ model() : Model \\
+	+ schematic() : Schematic \\
+	}
+
+	\umlinherit
+	[anchors= north and south]
+	{DocumentEntry}{QObject}
+
+	\umlclass[x=6, y=17]{Document}{}{
+	+ addEntry(entry : DocumentEntry*) \\
+	+ entryForFullId(id : QString) : DocumentEntry*
+	}
+
+	\umlunicompo
+	[anchor1=170, anchor2=-20, geometry=-|,
+	arg2= document, mult2=1, mult1=1]
+	{DocumentEntry}{Document}
+
+	\umluniaggreg
+	[anchor1=east, anchor2=west,
+	arg2=entries, mult2=*, mult1=1]
+	{Document}{DocumentEntry}
+
+	\umlinherit
+	[anchors= north and west, geometry=|-]
+	{Document}{QObject}
+
+	\begin{umlpackage}{model}
+		\umlclass[x=6, y=10]{ModelElement}{}{}
+		\umlclass[x=16, y=10]{Model}{}{}
+		\umluniaggreg{Model}{ModelElement}
+	\end{umlpackage} % --- model
+
+	\umlVHVunicompo
+	[anchors= -130 and north,
+	mult1=1, mult2=1, pos2=2.5, arg2 = modelElement]
+	{DocumentEntry}{ModelElement}
+
+	\umlVHdep{DocumentEntry}{Model}
+
+	\begin{umlpackage}{gui}
+		\umlclass[x=46, y=25]{SchematicElement}{}{}
+		\umlclass[x=36, y=25]{Schematic}{}{}
+		\umluniaggreg{Schematic}{SchematicElement}
+	\end{umlpackage} % --- gui
+
+	\umlVHVunicompo
+	[anchors= -50 and north,
+	mult1=1, mult2=1, pos2=2.5, arg2 = schematicElement]
+	{DocumentEntry}{SchematicElement}
+
+	\umlVHdep[anchor1=70]{DocumentEntry}{Schematic}
+
+	\begin{umlpackage}{core}
+		\umlclass[x=16, y=25]{Identifiable}{}{
+		+ Identifiable(localId : QString, parent : Identifiable*) \\
+		+ localId() : QString \\
+		+ fullId() : QString \\
+		\umlstatic{+ isValidLocalId(id : QString) : bool} \\
+		\umlstatic{+ isValidFullId(id : QString) : bool} \\
+		}
+
+		\umlunicompo[anchors = south and 150, geometry=|-|, arm1=-2cm, arm2=-cm, 
+		arg2 = parent, mult2= 0..1, mult1=1, pos2=2.25]
+		{Identifiable}{Identifiable}
+	\end{umlpackage} % --- core
+
+	\umlinherit
+	[anchors=north and east, geometry=|-]
+	{DocumentEntry}{Identifiable}
+
+	\umlinherit
+	[anchors=north and west, geometry=|-]
+	{Document}{Identifiable}
+
+
+	\begin{umlpackage}{enums}
+		\umlclass[x=41, y=17, type=enum]{DocumentEntryType}{
+			COMPONENT \\
+			MODULE\_INTERFACE \\
+			PORT \\
+			WIRE
+		}{}
+	\end{umlpackage} % --- enums
+
+	\umlunicompo
+	[mult1=1, mult2=1, arg2=type]
+	{DocumentEntry}{DocumentEntryType}
+
+	\begin{umlpackage}{factories}
+		\umlclass[x=36, y=10]{DocumentEntryFactory}{}{
+		\umlstatic{+ instantiateComponent(document : Document*, type : ComponentDescriptor*, 
+			position : QPointF,$\hookleftarrow$} \\
+		\hspace{1cm} \umlstatic{id : QString, autoInstancePorts : bool) : DocumentEntry*} \\
+		\umlstatic{+ instantiateInputPort(document : Document*, position : QPointF, id : QString) : DocumentEntry*} \\
+		\umlstatic{+ instantiateOutputPort(document : Document*, position : QPointF, id : QString) : DocumentEntry*} \\
+		\umlstatic{+ instantiateWire(document : Document*, sender : DocumentEntry*, 
+			receiver : DocumentEntry*, $\hookleftarrow$} \\
+ 		\hspace{1cm} \umlstatic{id : QString) : DocumentEntry*} \\
+		}
+	\end{umlpackage}
+
+	\umlVHVdep
+	[anchor1= 130, anchor2=-50, pos stereo=1.5, stereo=generate]
+	{DocumentEntryFactory}{DocumentEntry}
+	
+	\umlVHVdep[pos stereo= 1.5, stereo=use]{DocumentEntryFactory}{DocumentEntryType}
+	\umlHVdep[pos stereo= 1.5, stereo=use, anchor2 = -50]{DocumentEntryFactory}{SchematicElement}
+	
+	\umlVHVdep
+	[anchors= south and south, arm1 =-2cm, stereo=use, pos stereo=1.5]
+	{DocumentEntryFactory}{ModelElement}
+
+	\begin{umlpackage}{metamodel}
+		\umlclass[x =46, y=4]{ComponentDescriptor}{}{}
+	\end{umlpackage}
+
+	\umlVHdep
+	[anchor1=50, stereo=use, pos stereo=1.5]
+	{DocumentEntryFactory}{ComponentDescriptor}
+
+\end{umlpackage} % --- q2d
+
+\end{tikzpicture}

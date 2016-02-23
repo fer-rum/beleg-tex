@@ -1,0 +1,118 @@
+\begin{tikzpicture}
+
+\draw[draw=none] (0,0) rectangle (52, 34);
+
+% -- Qt classes
+\umlclass[x=18, y=28]{QObject}{}{
++ QObject(parent : QObject*)
+}
+
+\umlclass[x=34, y=28]{QStandardItem}{}{
++ QStandardItem(text : QString) \\
+\umlvirt{+ type() : int}
+}
+
+\begin{umlpackage}{q2d}
+	\begin{umlpackage}{metamodel}
+
+		\begin{umlpackage}{enums}
+		\umlclass[type=enum, x=10, y=20]{ElementType}{
+			CATEGORY \\
+			COMPONENT \\
+			CONFIG\_BIT \\
+			CONFIG\_BIT\-GROUP \\
+			FUNCTION \\
+			INVALID \\
+			PORT \\
+		}{}
+		\end{umlpackage} % --- enums
+
+	\umlclass[x=26, y=20, type=abstract]{Element}{
+	}{
+	+ Element(name : QString, parent : Element*) \\
+	\umlvirt{+ type() : int}
+	}
+	\umldep{Element}{ElementType}
+	\umlinherit[geometry=|-]{Element}{QObject}	
+	\umlinherit[geometry=|-]{Element}{QStandardItem}
+
+	\umlclass[x=13, y=14, type=abstract]{HierarchyElement}{
+	-hierarchyName : QString
+	}{
+	+ HierarchyElement(name : QString, parent : Category*) \\
+	}
+	\umlVHVinherit{HierarchyElement}{Element}
+
+	\umlclass[x=34, y=14, type=abstract]{ComponentElement}{ % --- ComponentElement
+	-hierarchyName : QString
+	}{
+	+ ComponentElement(name : QString, parent : ComponentDescriptor*) \\
+	}
+	\umlVHVinherit{ComponentElement}{Element}
+
+	\umlclass[x=5, y= 6]{Category}{}{ % --- Category
+	+ addSubItem(toAdd : HierarcyElement) \\
+	+ type() : int
+	}
+	\umlinherit[geometry=|-|, anchors = north and south]{Category}{HierarchyElement}
+	\umlunicompo
+	[arg1=parent, mult1=*, pos2=1.8, mult2=1, geometry=-| , anchors=west and 130]
+	{HierarchyElement}{Category}
+
+	\umlclass[x=16, y=6]{ComponentDescriptor}{}{ % --- ComponentDescriptor
+	+ addConfigBitGroup(configBitGroup : ConfigBitGroupDescriptor*) \\
+	+ addFunction(function : QString) \\
+	+ addPort(port : PortDescriptor*) \\
+	+ setSymbolPath(path : QString) \\
+	+ type() : int
+	}
+	\umlVHVinherit[anchors= north and south]{ComponentDescriptor}{HierarchyElement}
+	\umlunicompo
+		[arg1=parent, pos1=0.1, align1=right, mult1=*, 
+		pos2=1.8, align2=left, mult2=1, geometry=-| , anchors=west and 30]
+		{ComponentElement}{ComponentDescriptor}
+
+	\umlclass[x=30, y=6]{ConfigBitGroupDescriptor}{- memberCount : unsigned}{ % --- ConfigBitGroupDescriptor
+	+ ConfigBitGroupDescriptor(name : QString, memberCount : unsigned, $\hookleftarrow$ \\
+	\hspace{1cm}parent : ComponentDescriptor*) \\
+	+ type() : int
+	}
+	\umlVHVinherit[anchors= north and south]
+	{ConfigBitGroupDescriptor}{ComponentElement}
+
+	\umlclass[x=25, y=10]{ConfigBitDescriptor}{}{ % --- ConfigBitDescriptor
+	+ type() : int
+	}
+	\umlHVinherit[anchors= east and south]
+	{ConfigBitDescriptor}{ComponentElement}
+	\umldep
+	[stereo=generate, pos stereo = 2.5,  anchors = 150 and south, geometry=|-|]
+	{ConfigBitGroupDescriptor}{ConfigBitDescriptor}
+
+	\umlclass[x=44, y=6]{FunctionDescriptor}{}{ % --- FunctionDescriptor
+	+ FunctionDescriptor(function : QString, parent : ComponentDescriptor*) \\
+	+ type() : int
+	}
+	\umlVHVinherit[anchors= north and south]
+	{FunctionDescriptor}{ComponentElement}
+
+	\umlclass[x=48, y=10]{PortDescriptor}{ % --- PortDiscriptor
+	- direction : PortDirection
+	}{
+	+ position() : QPoint \\
+	+ type() : int
+	}
+	\umlHVinherit[anchors= west and south]
+	{PortDescriptor}{ComponentElement}	
+
+	\end{umlpackage} % --- metamodel
+\end{umlpackage} 
+
+\umlclass[x =48, y=28, type=enum]{PortDirection}{
+			IN \\
+			OUT
+		}{}
+\umlunicompo[anchors= north and south, geometry=|-|]{PortDescriptor}{PortDirection}
+\umlnote[x=42, y=28]{PortDirection}{namespace q2d::model::enums}
+
+\end{tikzpicture}

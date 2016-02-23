@@ -1,0 +1,146 @@
+\begin{tikzpicture}
+
+\draw[draw=none](0,0) rectangle (52, 34);
+
+\umlclass[x=14, y=32]{QObject}{}{
++ QObject(parent : QObject*)
+}
+
+\umlclass[x=46, y=32]{QGraphicsObject}{}{}
+\umlVHVinherit[arm1=0.5cm, anchors=north and north]{QGraphicsObject}{QObject}
+
+\umlclass[x=36, y= 32]{QGraphicsItem}{}{}
+
+\umlclass[x=26, y=32]{QGraphicsScene}{}{
++ addItem(item : QGraphicsItem)
+}
+\umlHVHinherit{QGraphicsScene}{QObject}
+\umlinherit{QGraphicsObject}{QGraphicsItem}
+\umlHVassoc[anchor2=150, arg1=scene,  mult1=1, pos1=0.25, arg2=item, mult2=*]
+	{QGraphicsScene}{QGraphicsItem}
+
+\begin{umlpackage}{q2d}
+
+\umlclass[x=14, y=28]{Document}{}{
++ schematic() : Schematic*
+}
+\umlinherit{Document}{QObject}
+
+\umlclass[x=7, y=28]{DocumentEntry}{}{
++ schematic() : Schematic*
+}
+\umlVHinherit{DocumentEntry}{QObject}
+\umlunicompo[mult1=1, mult2=*]{Document}{DocumentEntry}
+
+\begin{umlpackage}{metamodel}
+
+\umlclass[x=26, y=2]{ComponentDescriptor}{}{}
+
+\end{umlpackage}
+
+
+\begin{umlpackage}{gui}
+
+% --- Schematic
+\umlclass[x=26, y=24]{Schematic}{}{
++ Schematic(parent : Document*)
+}
+\umlinherit{Schematic}{QGraphicsScene}
+\umlVHassoc
+[anchor1=130, arg1=schematic, mult1=1, arg2=parent, pos2=1.9, mult2=1]
+{Schematic}{Document}
+
+% --- SchematicElement
+\umlclass[x=36, y=18, type=abstract]{SchematicElement}{}{
++ SchematicElement(position : QPointF, $\hookleftarrow$ \\
+	\hspace{1cm}relatedEntry : DocumentEntry*) \\
++ addActual(actual : QGraphicsItem*) \\
++ scene() : Schematic* \\
+\umlvirt{+ additionalJson() : QJsonObject} \\
+\umlvirt{+ specificType() : QString}
+}
+\umlHVinherit{SchematicElement}{QGraphicsObject}
+\umlHVassoc[anchor1= 160, arg1=schematicElement, mult1=1, arg2=relatedEntry, pos2=1.9, mult2=1]
+	{SchematicElement}{DocumentEntry}
+\umlVHVuniaggreg
+	[mult1=1, mult2=*, arg2=actuals, pos2=2.75]
+	{SchematicElement}{QGraphicsItem}
+\umlHVdep
+	[anchor2=130, mult1=1, mult2=*, pos2=1.75]
+	{Schematic}{SchematicElement}
+
+% --- ParentSchematicElement
+\umlclass[x=10, y=18, type=abstract]{ParentSchematicElement}{}{}
+\umlinherit{ParentSchematicElement}{SchematicElement}
+
+% -- PortGraphicsItem
+\umlclass[x=28, y=12]{PortGraphicsItem}{
+- direction : PortDirection \\
+- wireDrawingMode : bool
+ }{
++ PortGraphicsItem(position : QPointF,  $\hookleftarrow$\\
+	\hspace{1cm} relatedEntry : DocumentEntry*, direction : PortDirection)
+}
+\umlHVinherit[anchors = east and south]{PortGraphicsItem}{SchematicElement}
+\umlHVdep[anchor1 = -15, pos1= 0.15, mult1=1, mult2=*, pos2=1.75]
+	{ParentSchematicElement}{PortGraphicsItem}
+
+% -- ComponentGraphicsItem
+\umlclass[x=6, y=6]{ComponentGraphicsItem}{}{
++ ComponentGraphicsItem(position : QPointF, $\hookleftarrow$\\
+	\hspace{1cm} relatedEntry : DocumentEntry*, $\hookleftarrow$ \\
+	\hspace{1cm} descriptor : ComponentDescriptor) \\
++specificType() : QString \\
+}
+\umlVHinherit[anchor1=130]{ComponentGraphicsItem}{ParentSchematicElement}
+\umlVHunicompo[mult1=*, arg2=descriptor, mult2=1, pos2=1.8]
+ 	{ComponentGraphicsItem}{ComponentDescriptor}
+
+% --- ModuleInterfaceGI
+\umlclass[x= 11, y=12]{ModuleInterfaceGI}{
+- direction : PortDirection
+}{
++ ModuleInterfaceGI(position : QPointF, $\hookleftarrow$\\
+	\hspace{1cm} relatedEntry : DocumentEntry*, $\hookleftarrow$ \\
+	\hspace{1cm} direction : PortDirection) \\
+}
+\umlHVinherit{ModuleInterfaceGI}{ParentSchematicElement}
+
+% --- WireGraphicsItem
+\umlclass[x=43, y=12]{WireGraphicsItem}{}{
++ WireGraphicsItem(start : PortGraphicsItem*, $\hookleftarrow$ \\
+	\hspace{1cm} end : PortgraphicsItem*, $\hookleftarrow$ \\
+	\hspace{1cm} relatedEntry : DocumentEntry*) \\
+- routeLeftToRight() \\
+- routeStraight() \\
++ route()
++ additionalJson() : QJsonObject
+}
+\umlHVinherit{WireGraphicsItem}{SchematicElement}
+\umlVHVunicompo[arg2=start, mult2=1, mult1=1,  pos2=1.8, anchors=-140 and -50, arm2=-1cm]
+	{WireGraphicsItem}{PortGraphicsItem}
+\umlVHVunicompo[arg2=end, mult2=1, mult1=1, pos2=1.9, anchors=-130 and -70, arm2=-1.5]
+	{WireGraphicsItem}{PortGraphicsItem}
+
+% --- WireGraphicsLineItem
+\umlclass[x=43, y= 6]{WireGraphicsLineItem}{}{
++ WireGraphicsLineItem(start : QPointF, end : QPointF $\hookleftarrow$ \\
+	\hspace{1cm} parent : WireGraphicsItem*) \\
+}
+\umlcompo
+	[mult1=1, mult2=1..*, arg2=actuals]
+	{WireGraphicsItem}{WireGraphicsLineItem}
+
+\begin{umlpackage}{enums}
+\umlclass[x=19, y=14, type=enum]{PortDirection}{
+			IN \\
+			OUT
+		}{}
+\end{umlpackage}
+\umlHVdep[stereo=use]{ModuleInterfaceGI}{PortDirection}
+\umlHVdep[stereo=use]{PortGraphicsItem}{PortDirection}
+
+\end{umlpackage}
+\end{umlpackage}
+
+\end{tikzpicture}

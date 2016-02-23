@@ -1,0 +1,42 @@
+\begin{tikzpicture}
+%\draw[style=help lines] (0,-1) grid (18,1);
+
+\draw[->, thick] (0,0)--(1,0);
+\draw[rounded corners=10] (1,-0.5) rectangle (5,0.5);
+	\node at (3,0){component name};
+\draw[->, thick] (5,0) -- (6,0);
+\draw (6,-0.5) rectangle (7,0.5);
+	\node at (6.5,0){\_};
+
+% in
+\draw[thick](7,0) .. controls (7.75,0) and (7.25,1.5) .. (8,1.5);
+\draw[->, thick] (8,1.5)--(9,1.5);
+\draw(9,1) rectangle (10,2);
+	\node at (9.5,1.5) {in};
+\draw[thick] (10,1.5)--(11,1.5);
+\draw[thick](11,1.5) .. controls (11.75,1.5) and (11.25,0) .. (12,0);
+
+% out
+\draw[->, thick] (7,0)--(9,0);
+\draw(9,-0.5) rectangle (10,0.5);
+	\node at (9.5,0) {out};
+\draw[->, thick] (10,0)--(13,0);
+
+% sel
+\draw[thick](7,0) .. controls (7.75,0) and (7.25,-1.5) .. (8,-1.5);
+\draw[->, thick] (8,-1.5)--(9,-1.5);
+\draw(9,-2) rectangle (10,-1);
+	\node at (9.5,-1.5) {sel};
+\draw[thick] (10,-1.5)--(11,-1.5);
+\draw[thick](11,-1.5) .. controls (11.75,-1.5) and (11.25,0) .. (12,0);
+
+\draw[rounded corners=10] (13,-0.5) rectangle (15,0.5);
+	\node at (14,0){bit index};
+
+\draw[->, thick] (15,0)--(16,0);
+
+% annotation
+\draw[thick, lightgray, dashed](6,-1)--(6.5,-0.5);
+\draw[thick, lightgray] (3,-2) rectangle (6,-1);
+	\node[lightgray] at (4.55,-1.5){underscore};
+\end{tikzpicture}

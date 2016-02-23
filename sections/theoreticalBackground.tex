@@ -1,0 +1,227 @@
+\section{Theoretical Background}
+	\label{sec-theoretical-background}
+	
+	When looking at the posed problem from a mathematical perspective, it becomes clear that the solving of a \gls{qbf} problem is required.
+	Intuitively speaking, the designed circuit and its components are to be described by boolean formulae. 
+	For those, an interpretation is to be found, which lets all formulae become true.
+	As such a satisfying interpretation defines suitable values for the configurable circuit elements, it will be called a \emph{configuration}.
+
+\subsection{Definitions}
+	\label{sec-definitions}
+	
+	For simplicity, a shorthand notation for the set of boolean values will be used as provided in equation \ref{eqn-define-Bool}.
+	
+	\begin{equation}
+		\label{eqn-define-Bool}
+		\mathbb{B} := \lbrace \bot, \top \rbrace
+	\end{equation}
+
+	When talking about circuits, the need to distinguish its elements from each other arises, since each of them establishes its own \emph{context}.
+	This will be achieved by marking symbols referring to circuit element $\epsilon$ with the index $\epsilon$.
+	If no index is given, the symbol refers to the circuit as a whole.
+	This will also be referred to as the \emph{global context}.
+
+	Further, it is useful to define three disjunct sets of variables. 
+	Each of these sets has a distinct semantic meaning.
+	
+	\begin{description}
+		\item[$C_\epsilon$] Configuration variables represent programmable bits that define the temporary specific behaviour of an element.
+		
+		\item[$N_\epsilon$] Node variables represent the interfacing points of components that serve as ports for interconnecting the overall circuit.
+		
+		\item[$X$] Input variables stand for the outside connections of the whole circuit that are driven arbitrarily during the circuit's operation by the surrounding world.
+	\end{description}
+	
+	Let a \gls{pcbd} be given as a boolean formula on a set of configuration and node variables as in equation \ref{eqn-define-fsmall}.
+
+	\begin{equation}
+		\label{eqn-define-fsmall}
+			f_{\epsilon, i}\left( V_\epsilon \right)
+		\left|
+			\begin{array}{l}
+			V_\epsilon \subseteq \left( C_\epsilon \cup N_\epsilon \right) \\
+			i \in \left[0,n\right); \, n \in \mathbb{N}
+			\end{array}
+		\right.
+	\end{equation}
+
+	An arbitrary large set of \glspl{pcbd} can be used to describe the behaviour of a single circuit element such as a component or a wiring.
+	All those \glspl{pcbd} are combined in equation \ref{eqn-define-F-epsilon} into a set describing the whole circuit elements behaviour, called the \gls{cbd}.
+	
+	\begin{equation}
+		\label{eqn-define-F-epsilon}
+			F_\epsilon := \bigcup_n f_{\epsilon, n} \left( V_\epsilon \right)
+	\end{equation}	
+	
+	% N, C, F form context of \epsilon	
+	For any given element $\epsilon$, its \emph{local context} is defined in equation \ref{eqn-define-box-epsilon} as
+	
+	\begin{equation}
+		\label{eqn-define-box-epsilon}
+		\Box_\epsilon := \left(C_\epsilon, N_\epsilon, F_\epsilon \right)
+	\end{equation}
+	
+\subsection{Expressing Connections between Circuit Elements}
+	In the case of node variables, it may occur that two elements effectively refer to the same node.\footnote{
+		For example, one might think of a wire that is connected to the port of a component.	
+	}
+	Then, given the existence of two elements $\epsilon_a$ and $\epsilon_b$ sharing the same node, this common node can be expressed as a boolean formula $\sigma_{a, b}$. 
+	
+	\begin{equation}
+	\sigma_{a, b} = 
+	\left\lbrace
+	n_a \Leftrightarrow n_b
+	\vert
+		n_a \in N_{\epsilon_a} \wedge 
+		n_b \in N_{\epsilon_b} \wedge 
+		\, \text{$n_a$ and $n_b$ are connected}
+	\right\rbrace
+	\label{eqn-define-sigma}
+	\end{equation}
+	
+	Note that the equivalence can be transformed as shown in equation \ref{eqn-resolve-equivalence}. 
+
+	\begin{equation}
+	\begin{aligned}
+		x \Leftrightarrow y 
+		&\equiv \left( x \Leftarrow y \right) \wedge \left( x \Rightarrow y \right) \\
+		&\equiv \left( \neg x \vee y \right) \wedge \left( x \vee \neg y \right) \\
+		&\equiv \left[ \bar{x}, y \right] \left[ x, \bar{y} \right]
+	\end{aligned}
+	\label{eqn-resolve-equivalence}
+	\end{equation}
+	This will come in handy at several points in the future, especially when discussing conversions into \gls{cnf}.
+	
+\subsection{Global Context and Target Function}
+
+	\paragraph{Creating the Global Context}
+	To obtain a holistic description of the circuit, it is required to create a global context for the whole described circuit.
+	For this purpose, the sets of node and configuration variables are merged as shown in equation \ref{eqn-merged-varsets}.
+	
+	\begin{equation}
+	\begin{aligned}
+		N &:= \bigcup_\epsilon N_\epsilon \\
+		C &:= \bigcup_\epsilon C_\epsilon
+	\end{aligned}
+	\label{eqn-merged-varsets}
+	\end{equation}
+	
+	In the global context, there also exist input variables that have to be mapped to node variables to express how the inputs are connected to the circuit.
+	This mapping is quite similar to the definition of the $\sigma$-notation in equation \ref{eqn-define-sigma} and consequently is called $\sigma^*$.
+	
+	\begin{equation}
+	\sigma^* = 
+	\left\lbrace	
+		x \Leftrightarrow n \\
+	\vert
+		x \in X \wedge
+		n \in N \wedge
+		\, \text{$x$ and $n$ are connected}
+	\right\rbrace
+	\label{eqn-define-sigma-star}
+	\end{equation}
+	
+	One might wish to ensure that all inputs to a circuit are connected by requiring
+	\begin{equation}
+		\forall x. \exists n.
+		\left( 
+			x \Leftrightarrow n
+		\right) \in \sigma^*\left( x, n \right) 
+	\left| 
+	\begin{array}{l}
+		x \in X \\
+		n \in N
+	\end{array}
+	\right.
+	\end{equation}		
+	
+	This, however is not necessary for the problem to be decidable and will not be enforced.
+	As a result, a global set of formulae set $F$ can be created as
+	
+	\begin{equation}
+		F := 
+		\bigcup_{\epsilon} F_\epsilon \cup
+		\bigcup_{a, b} \sigma_{a, b} \cup 
+		\sigma^*
+	\end{equation} 	
+	
+	This can also be merged into a single formula $F^*$ by conjugating all elements of $F$.\footnote{
+		One may find that node variables could be removed at this point by merging functions into each other and creating one large transfer formula that describes the whole circuit.
+		There are, however, no practical gains proceeding so since the automated solving of the problem might re-introduce them eventually.
+		Also, solvers are capable of performing clause and literal eliminations by themselves.
+	}	
+	
+	\begin{equation}
+		F^* := \bigwedge_{f \in F} f
+	\end{equation}	
+	
+	Comparable boolean description techniques of circuit behaviour can be found in \cite{EfficientSAT} and \cite{FPGA_PLB}.
+	
+	Conclusively, the global context can now be represented by 
+
+	\begin{equation}
+		\Box := \left(C, N, X, F \right)
+		\label{eqn-define-box}
+	\end{equation}	
+
+	\paragraph{Including the Target Formula}
+	Once all contexts are established, the last thing left to specify is the \emph{target formula}.
+	It describes desired behaviour of the given circuit partially.\footnote{
+		Given the case that there exists only one partial target formula it trivially equals the complete target formula.
+	}
+	For that purpose, an indexed target formula $t_i$ can be defined as  
+	
+	\begin{equation}
+	t_ i\left( V \right)
+	\left|
+	\begin{array}{l}
+		V \subseteq \left( X \cup N \right) \\
+		i \in \left[0,n\right); \, n \in \mathbb{N}
+	\end{array}
+	\right.
+	\end{equation}
+
+	To maintain a consistency with the ways of defining and naming things, the set of partial target functions is called $T$.
+
+	\begin{equation}
+		T := \bigcup_i t_i
+	\left|
+		i \in \mathbb{N}
+	\right.
+	\end{equation}		
+	
+	Since all target functions need to be fulfilled to solve the problem, it is an obvious step to conjunct them into a general target function $T^*$.
+	
+	\begin{equation}
+		T^* := \bigwedge_{t \in T} t
+	\end{equation}	 
+	
+\subsection{Problem formulation as QBF and SAT}
+	\label{sec-qbf-to-sat}
+	With all prerequisites established, equation \ref{eqn-qbf-representation} then encodes the fact that there exists a configuration that for all input combinations, there is a node assignment so that $F^* \wedge T^*$ is fulfilled.
+
+	\begin{equation}
+		\label{eqn-qbf-representation}
+			\exists c.\forall x. \exists n. \left( F^* \wedge T^* \right)
+		\left|
+		\begin{array}{l}		 
+			c \in C;\ x \in X;\  n \in N
+		\end{array}	
+		\right.
+	\end{equation}
+	
+	This formula establishes an \emph{EAE-problem}, which is a special instance of a \gls{qbf}.
+	Many tools require a representation in \gls{cnf}.
+	It is possible to translate \gls{qbf}-problems into \gls{sat}-problems although the sets of clauses and variables will expand largely. \cite{SATinQBF}
+	
+	Section \ref{sec-solving-qbf} will discuss how this problem has been approached in the actual implementation.
+	
+	\paragraph{Looking for Multiple Solutions}
+	Once the problem formulation is present in \gls{cnf}, it can be evaluated, whether the problem is satisfiable.
+	Should this be the case, the negated solution can be added as a clause to the problem.
+	If this also turns out to be satisfiable, an alternative solution has been found.
+	This process can be repeated until the problem is no longer satisfiable, at which point all possible solutions have been found.\footnote{
+		In the actual implementation, the \gls{sat} solver might abort not only due to the problem being not satisfiable but also when running out of memory or exceeding a certain computation time.
+		Usually solvers report the reason for stopping early.
+		Still, only non-satisfiability can definitively negate the existence of further solutions.
+	}

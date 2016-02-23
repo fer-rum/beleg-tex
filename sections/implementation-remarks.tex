@@ -1,0 +1,25 @@
+In this section, implementation details of the application will be discussed.
+Since the actual source files contain several thousands line of code, as well as dozens of classes and methods, it is not viable to explain everything in detail.
+Therefore, several simplifications have been made in the following, to maintain the focus on the presented features.
+
+\begin{itemize}
+	\item All classes and methods that belong to the tool's implementation always reside in the super-namespace \texttt{q2d}, even if not explicitly stated.
+	
+	\item Classes that originate from \gls{qt} are not explicitly marked as such.
+	They still can be easily spotted since it is a convention within the framework that all class names are prefixed with an uppercase letter \emph{Q}.
+	\item The presentation has been reduced to focus on the main structure.
+	For this reason, accessors, attributes and methods used for bookkeeping or as helpers have been omitted unless they are in some way important for explanatory reasons.
+	
+	\item Code elements, that were already considered deprecated at the time of writing, also have been left out.
+\end{itemize}
+
+Any description given here naturally can only reflect the application's state at a certain point in time.
+To obtain further information on implementation details, it is strongly recommended to check out the project repository from \gls{github}.\footnote{
+	\url{github.com/fer-rum/q2d}
+}
+In addition to the documentation delivered with the source code, a wiki is available at this site to help answering questions the user might have.\footnote{
+	Should the wiki not be able to provide a satisfying answer, an issue should be opened, which will cause the developers to expand the wiki to cover the posed question as well. 
+}
+
+\Gls{uml} diagrams have been added to this document to aid understanding.
+They can be found in appendix~\ref{sec-appendix-uml}

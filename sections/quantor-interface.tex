@@ -1,0 +1,69 @@
+\section{The Quantor Interface}
+	\label{sec-quantor-interface}
+	The computation of the \gls{qbf} solution using \gls{quantor} as outlined in section \ref{sec-solving-qbf} is very straight-forward.
+	\Gls{quantor} itself is written in \emph{C}, so bridging classes to \emph{C++} were created.
+	Further, it is requited to build the contexts and transform them to \gls{cnf}.
+	At this point, the \gls{qbf} solver can take over.
+	Upon completion, it returns a structure representing the result, which again will be wrapped into a \emph{C++} class.
+	
+	\paragraph{The Solving Process}
+	The whole \gls{qbf} solving process is controlled by the \texttt{QuantorInterface}.
+	It inherits \texttt{QObject} since this enables it to use \gls{qt}'s \emph{signal and slot system}. %TODO cite
+	This method of program-internal communication will trigger the solving process via the \texttt{slot\_solveProblem()}.\footnote{
+		A lot of other classes discussed earlier use this mechanism for communication as well.
+		It has not been explicitly mentioned so far, to keep things straightforward.
+	}
+	
+	If posed with a problem, the target document will be queried for the model, from which the contexts can be build.
+	Once available, these are fed into the \texttt{Quantorizer}, which in turn transforms them in a form that \gls{quantor} will accept as an input and trigger the actual evaluation of the \gls{qbf}.
+	
+	Upon completion, the solver will deliver a verdict, which might be either \emph{satisfiable}, \emph{not satisfiable}, \emph{out of time} or \emph{out of memory}.
+	In the first case, it will also return a set of integer numbers, representing the solution found.
+	The result object is interpreted by the \texttt{QuantorInterface} which will then present the verdict as a string and, if applicable, a mapping from the full IDs of configuration bits to their boolean value assignments that solve the problem.
+	The found answer is propagated by emitting the \texttt{signal\_hasSolution()}
+
+	\paragraph{Variable Representation in Quantor}
+	Internally, \gls{quantor} represents each variable by an integer number greater than zero.
+	When using literals in clauses, the number of the variable is employed unaltered to represent a positive literal or inverted to represent a negative literal.
+	
+	\paragraph{Context Creation in Detail}
+	It is a responsibility of the context creation process to provide a consistent mapping of the full IDs of variables yielded by model elements to their numerical representations to be used by \gls{quantor}.
+	One context will be created for each interfacing model element, implementing the theoretical approach of equation \ref{eqn-define-box-epsilon}.
+	Additionally, there is a \emph{global context}, in accordance with equation \ref{eqn-define-box}.
+	Unlike the theoretical approach, the actual implementation does not merge all sets of variables and terms but rather keeps all model element contexts as children of the global context.
+	This allows the re-use of already created \texttt{QIContext} instances.
+	The resulting lookup overhead due to traversing an additional hierarchy level for variables was found to have a negligible impact on the time of problem solving.
+	A further motivation for this approach was the specification of \glspl{cbd} in descriptor files.
+	These use only local names since it is not known, before instantiating a component, what its name will be and, in turn, what the full IDs of the used variables will be.
+	Re-naming them appropriately in each of the \glspl{pcbd} after component instantiation did not appear to offer any considerable benefits for the effort.
+	For the proper assignment of variables to their numeric counterparts, a context must be aware of the range of values it can use for the mapping.
+	Such a value is also called an \emph{index}.
+	Since contexts are not created in parallel but one after another, this can be easily achieved by passing the lowest index to be used when instantiating a \texttt{QIContext} instance.
+	It will then collect all variables yielded by the abstracted model element.
+	Upon encountering a new variable, a lookup will be made to see if it has already occurred in another context.
+	This might for example be the case for node variables which occur in \glspl{pcbd} as well as $\sigma$-formulae.
+	Should this be the case, the variable's already known index will be adopted.
+	Otherwise, the current index will be incremented and mapped to this variable.
+	Once all variables are processed this way, the current index is the highest index used by this context and will be passed on to the next context to be used as its lower index bound.
+	In the next step, all connections within the model elements are evaluated and $\sigma^*$ as defined in equation \ref{eqn-define-sigma-star} is introduced to the problem description.
+	Lastly, the context also collects all \glspl{pcbd} contained in the model element, or, in the case of the global context, the target formula.
+	
+	\paragraph{The Quantorizer}
+	To transform the information gathered during context creation into a form which is suitable as input for \gls{quantor}, the \texttt{Quantorizer} will parse all \glspl{cbd} as well as the target formula.\footnote{
+		The \emph{quantorizer} essentially is a parser, created by the parser generator \emph{wisent}\cite{wisent}.	
+	}
+	If any given boolean term cannot be parsed properly due to input errors or corrupted descriptor files, a \texttt{ParseException} will be thrown and the solving process will be aborted, reporting an error.\footnote{
+		Depending on the version of \emph{q2d} used, error reporting might be facilitated by printing to \texttt{stderr}.
+		\Gls{ui} support for error messages was introduced relatively late in the development process.
+		It can be useful to launch the application from the console to not miss any messages.	
+	}
+	Otherwise, the variables contained in the term or function will be looked up and their indices used to create clauses, to be added to \gls{quantor}'s description of the problem.
+	Once done, the solver can proceed to work on the problem.
+	Its result will be returned to the \texttt{QuantorInterface}.
+	
+	\paragraph{Interpreting the Result}
+	The result is emitted in two parts by the \texttt{Quantorizer}.
+	A \texttt{Result}-object is returned from the call to \texttt{solve()}, and the vector given as a parameter will be filled with the literal assignments of the solution.
+	While the returned object can be cast to a string to obtain a textual representation, the vectors content has to be resolved back to full IDs.
+	The sign of an element of the vector expresses if this certain variable should be configured to be either true or false.
+	In doing so, a human-readable interpretation of the solution can be obtained and will be presented to the user in tabular form.

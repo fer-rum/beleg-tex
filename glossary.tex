@@ -1,0 +1,58 @@
+%% glossary.tex
+%%
+%% Write down all your entries for your glossary here.
+%% Abbreviations go to acronyms.tex
+%%
+
+%% --- C ---
+\newdualentry{cbd}{CBD}{Component Behaviour Descriptor}{
+The set of all \glspl{pcbd} referring to the same component context forms the holistic description of the components behaviour.
+A formal definition can be found in section \ref{sec-definitions}.
+}
+
+%% --- D ---
+\longnewglossaryentry{din}{name=DIN}{
+	\emph{Deutsche Industrienorm}, German industrial standard.
+}
+
+%% --- G ---
+\longnewglossaryentry{github}{name=GitHub}{
+	A web-based provider for \emph{git}-repositories. The site features convenient tools for many standard tasks that come with the management of projects and repositories.
+	The official website can be found at \url{www.github.com}.
+}
+
+%% --- P ---
+\newdualentry{pcbd}{pCBD}{partial Component Behaviour Descriptor}{
+A boolean formula, containing a subset of the node and configuration variables of a component context, is called a \emph{partial} \gls{cbd}.
+All \glspl{pcbd} of a component form the \gls{cbd}.
+See also section \ref{sec-definitions} and the entry for \gls{gls-cbd}.
+}
+
+%% --- Q ---
+
+\longnewglossaryentry{qt}{name=Qt}{
+A framework based on the \emph{C++} programming language. 
+It extends the language features of \emph{C++} by the use of a meta-compiler and and thereby enables amongst other things the use of introspection and signal-slot concepts.
+Common \glspl{os} like \emph{Linux}, \emph{Windows}, \emph{OS\,X} or \emph{Android} are well supported.
+Furthermore, libraries are offered for a lot of standard tasks like the abstraction of graphical \glspl{ui}, \gls{json}-parsing, device interaction, unit testing\dots
+\glspl{ide} specialized for the development with \emph{Qt} exist and provide support for the visual design of \glspl{ui} and internationalisation of developed applications while also integrating user-defined external tools and workflows.
+The official website can be found at \url{qt-project.org}.
+}
+
+\longnewglossaryentry{quantor}{name=Quantor}{
+An open-source solver for \gls{qbf} problems.
+It was developed by the Johannes-Kepler University of Linz and is written in \emph{C}.
+Internally, the \gls{sat} solver \emph{picosat} is employed.
+Both tools can be found at \url{fmv.jku.at/quantor} and \url{fmv.jku.at/picosat} respectively.
+}
+
+\longnewglossaryentry{qucs}{name=Qucs}{
+The \emph{Quite universal circuit simulator} is an open source tool for the visual design and simulation of analogous circuits.
+Recent development has expanded it to offer basic design and evaluation features for digital components as well.
+An exhaustive description can be found at \cite{Qucs:base} in combination with \cite{Qucs:devel}.
+The official website can be found at \url{qucs.sourceforge.net}
+}
+
+\longnewglossaryentry{}{name=}{
+
+}

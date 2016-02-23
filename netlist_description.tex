@@ -1,0 +1,87 @@
+
+\subsubsection{General description}
+The netlist format has a simple line-based syntax.
+Each line represents either a component or a connection between two components.
+Lines that begin with a number sign (\texttt{\#}) are comments.
+They are ignored by the parser, as are empty lines.
+The whole netlist shares one common namespace.
+Syntax elements with the same name thus refer to the same variable.
+Any spaces and tabulators may be added for improving readability and will be ignored by the parser.
+
+\subsubsection{Structure of a Description Line}
+\label{sec_netlist_syntax}
+\begin{figure}[Hbt]
+	\input{diagrams/line_syntax.pgf}
+	\caption{Syntax graph for a line in the intermediate netlist format}
+		\label{img_line_syntax}
+\end{figure}
+
+As shown in figure \ref{img_line_syntax} a line describing a component or a connection between components is composed of a upper-case \texttt{FUNCTION NAME} and three variable lists in a certain order.
+
+\begin{figure}[Hbt]
+        \centering
+        \begin{subfigure}[b]{0.4\textwidth}
+               \input{diagrams/variable_list_mayempty_syntax.pgf}
+                \caption{Selection variables list}
+                \label{img_var_syntax_mayempty}
+        \end{subfigure}%
+        \hfill %add desired spacing between images
+        \begin{subfigure}[b]{0.4\textwidth}
+                \input{diagrams/variable_list_nonempty_syntax.pgf}
+                \caption{In- and Output variables list}
+                \label{img_var_syntax_nonempty}
+        \end{subfigure}
+        \caption{Syntax graphs for the variables lists}
+        \label{img_var_syntax}
+\end{figure}
+
+Each of these variable lists follows the structure given in figure \ref{img_var_syntax}.
+Note, that the \texttt{selection variables lists} are allowed to be empty.
+The naming of variables follows a strict structure.
+Figure \ref{img_var_name_syntax} shows that it requires each component to be uniquely named. As a further restriction these \texttt{component names} may not contain whitespaces and must not begin with a number.
+
+\begin{figure}[Hbt]
+	\input{diagrams/variable_name_syntax.pgf}
+	\caption{Syntax graph for the variable name}
+		\label{img_var_name_syntax}
+\end{figure}
+
+The \texttt{bit indices} of the variables are natural numbers. 
+Given, there where $n$ variables in a variables list, they would have the \texttt{bit indices} from $n-1$ to $0$.
+Variables are ordered from highest to lowest \texttt{bit index} in each of the variables lists.
+
+\subsubsection{Semantics of a Description Line}
+Each of the lines following the specification given above describes either a component or the connection between components.
+Each variable in the variables lists is associated with one bit of a components ports.
+These bits are ordered first by meaning and thereafter by significance.
+The meaning decides in which of the variables lists a variable is put. Their meaning also influences the variable names infix as provided by figure \ref{img_var_name_syntax}:
+\begin{description}
+	\item[Input] direction variables provide data for a component to operate with. This is determined by the infix \texttt{in}.
+	\item[Output] direction variables represent the result of a components operation. They are infixed with \texttt{out}.
+		\item[Selection] variables are a special case of input variables. They are meaningful for components that can choose between different ways of operation, depending on a given configuration. These configurations can be given by manipulation the selection variables. They are marked by the infix \texttt{sel}.
+\end{description}
+Significance of a bit is expressed by the associated variables index. The order is from highest significance to lowest. 
+Combined with the restriction given in section \ref{sec_netlist_syntax} it follows that the \gls{msb} has index $n-1$ and the \gls{lsb} ist indexed with $0$.
+
+The \texttt{FUNCTION NAME} corresponds with the function of the component and may be of the following:
+\begin{itemize}
+	\item A boolean function, which is one of 
+		\texttt{NOT},
+		\texttt{AND},
+		\texttt{NAND},
+		\texttt{OR} or
+		\texttt{NOR}
+		%% support XOR / XNOR?
+		%% support TRUE / FALSE ?
+		%% support Buffer ?
+	\item A multiplexer, denoted as \texttt{MUX}
+	\item A lookup table, denoted as \texttt{LUT}
+\end{itemize}
+
+Connections between components are represented by the function \texttt{CONNECT}. They are the only cases in which the \texttt{component names} of the variables may differ, even if in the same variables list.
+
+Intermediate nodes that just result from wire routing or forking wires are named as shown in %% TODO fig
+A nodes index is an incremental natural number beginning at $0$.
+The order in which nodes are indexed is arbitrary.
+
+\subsubsection{Example of a simple Netlist}

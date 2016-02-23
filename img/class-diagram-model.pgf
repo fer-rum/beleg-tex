@@ -1,0 +1,149 @@
+\begin{tikzpicture}
+
+\draw[draw=none](0,0) rectangle (52, 34);
+
+\umlclass[x=26, y=32]{QObject}{}{
++ QObject(parent : QObject*)
+}
+
+\begin{umlpackage}{q2d}
+
+\umlclass[x=13, y=28]{Document}{}{
++ model() : Model*
+}
+\umlVHinherit{Document}{QObject}
+
+\umlclass[x=7, y=28]{DocumentEntry}{}{
++ model() : Model*
+}
+\umlVHinherit{DocumentEntry}{QObject}
+\umlunicompo[mult1=1, mult2=*]{Document}{DocumentEntry}
+
+\begin{umlpackage}{metamodel}
+
+\umlclass[x=26, y=2]{ComponentDescriptor}{}{}
+
+\end{umlpackage}
+
+
+\begin{umlpackage}{model}
+
+% --- Model
+\umlclass[x=26, y=24]{Model}{}{
++ Model(parent : Document*) \\
++ addComponent(toAdd : Component*) \\
++ addConductor(toAdd : Conductor*) \\
++ addInputInterface(toAdd : ModuleInterface*) \\
++ addOutputInterface(toAdd : ModuleInterface*)
+}
+\umlinherit{Model}{QObject}
+\umlVHassoc
+[anchor1=130, arg1=model, mult1=1, arg2=parent, pos2=1.75, mult2=1]
+{Model}{Document}
+
+% --- ModelElement
+\umlclass[x=36, y=18, type=abstract]{ModelElement}{}{
++ ModelElement(relatedEntry : DocumentEntry*) \\
++ localID() : QString \\
++  fullId() : QString \\
++ configVariables() : QStringList \\
++ inputVarialbles() : QStringList \\
++ nodeVariables() : QStringList \\
++ functions() : QStringList \\
++ propertyMap() : QMap<QString, QString>
+}
+\umlVHinherit{ModelElement}{QObject}
+\umlHVassoc[anchor2=130, arg1=parent,  mult1=1, pos1=0.5, arg2=child, mult2=*, pos2=1.75]{Model}	{ModelElement}
+\umlHVassoc[anchor1= 160, arg1=modelElement, mult1=1, arg2=relatedEntry, pos2=1.75, mult2=1]
+	{ModelElement}{DocumentEntry}
+
+% --- InterfacingME
+\umlclass[x=10, y=18, type=abstract]{InterfacingME}{}{
++ addPort(port : Port*) \\
++ nodeVariables() : QStringList \\
+}
+\umlinherit{InterfacingME}{ModelElement}
+
+% --- Node
+\umlclass[x=36, y=12, type = abstract]{Node}{}{
++ Node(relatedEntry : DocumentEntry*) \\
++ addDriver(driver : ModelElement*) \\
++ addDrivenElement(drivenElement : ModelElement*)
+}
+\umlinherit{Node}{ModelElement}
+\umlVHaggreg[anchors =150 and -130, arg2=driver, mult2=0..1, mult1=1, pos2=0.75]
+	{Node}{ModelElement}
+\umlVHaggreg[anchors =20 and -70, arg2=drivenElements, mult2=*, mult1=1, pos2=0.75]
+	{Node}{ModelElement}
+
+% -- Port
+\umlclass[x=26, y=12, type=abstract]{Port}{
+-direction : PortDirection
+}{
++ Port(direction : PortDirection, $\hookleftarrow$ \\
+	\hspace{1cm} relatedEntry : DocumentEntry*, $\hookleftarrow$ \\
+	\hspace{1cm} interfaced : InterfacingME) \\
++ propertyMap() : QMap<QString, QString>
+}
+\umlinherit{Port}{Node}
+\umlHVunicompo[anchor1 = -15, arg2=ports, mult1=1, mult2=*, pos2=1.75]{InterfacingME}{Port}
+
+% --- ModulePort
+\umlclass[x=22, y=8]{ModulePort}{}{
++ inputVariables() : QStringList \\
++ nodeVariables() : QStringList \\
+}
+\umlHVinherit{ModulePort}{Port}
+
+% --- ComponentPort
+\umlclass[x=30, y=8]{ComponentPort}{}{
++ nodeVariables() : QStringList \\
+}
+\umlHVinherit{ComponentPort}{Port}
+
+% -- Component
+\umlclass[x=6, y=6]{Component}{}{
++ Component(descriptor : ComponentDescriptor*, $\hookleftarrow$ \\
+	\hspace{1cm} relatedEntry : DocumentEntry*) \\
++ configVariables() : QStringList \\
++ functions() : QStringList \\
+}
+\umlVHinherit[anchor1=130]{Component}{InterfacingME}
+\umlVHunicompo[mult1=*, arg2=descriptor, mult2=1, pos2=1.8]
+	{Component}{ComponentDescriptor}
+\umlHVdep{Component}{ComponentPort}
+
+% --- ModuleInterface
+\umlclass[x= 11, y=12]{ModuleInterface}{
+- direction : PortDirection
+}{
++ ModuleInterface(relatedEntry : DocumentEntry*, $\hookleftarrow$ \\
+	\hspace{1cm} moduleDirection : PortDirection)
+}
+\umlHVinherit{ModuleInterface}{InterfacingME}
+\umlVHdep{ModuleInterface}{ModulePort}
+
+% --- Conductor
+\umlclass[x=46, y=18]{Conductor}{}{
++ Conductor(sender : Node*, receiver : Node*, $\hookleftarrow$ \\
+	\hspace{1cm}relatedEntry : DocumentEntry*) \\
++ nodeVariables() : QStringList \\
++ functions() : QStringList \\
+}
+\umlinherit{Conductor}{ModelElement}
+\umlVHunicompo[arg2=sender, mult2=1, mult1=1, pos2=1.8, anchors=-130 and 10]{Conductor}{Node}
+\umlVHunicompo[arg2=receiver, mult2=1, mult1=1, pos2=1.8, anchors=-50 and -10]{Conductor}{Node}
+
+\begin{umlpackage}{enums}
+\umlclass[x=19, y=14, type=enum]{PortDirection}{
+			IN \\
+			OUT
+		}{}
+\end{umlpackage}
+\umlHVdep[stereo=use]{Port}{PortDirection}
+\umlHVdep[stereo=use]{ModuleInterface}{PortDirection}
+
+\end{umlpackage}
+\end{umlpackage}
+
+\end{tikzpicture}

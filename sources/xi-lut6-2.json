@@ -1,0 +1,36 @@
+{
+ "name":"xi-lut6-2",
+ "ports":
+  [
+   {"name":"I0", "direction":"in"},
+   {"name":"I1", "direction":"in"},
+   {"name":"I2", "direction":"in"},
+   {"name":"I3", "direction":"in"},
+   {"name":"I4", "direction":"in"},
+   {"name":"I5", "direction":"in"},
+   {"name":"O5", "direction":"out"},
+   {"name":"O6", "direction":"out"}
+  ],
+"configBits":
+  [
+    {"name":"Init", "size":64}
+  ],
+"functions":
+  [
+    "[!I4, !I3, !I2, !I1, !I0, Init_31, !O5]",
+    "[!I4, !I3, !I2, !I1, !I0,!Init_31,  O5]",
+    "...",
+    "[ I4,  I3,  I2,  I1,  I0, Init_0 , !O5]",
+    "[ I4,  I3,  I2,  I1,  I0,!Init_0 ,  O5]",
+
+    "[ I5,  O5, !O6]",
+    "[ I5, !O5,  O6]",
+
+    "[!I5, !I4, !I3, !I2, !I1, !I0, Init_63, !O6]",
+    "[!I5, !I4, !I3, !I2, !I1, !I0,!Init_63,  O6]",
+    "[...]",
+    "[!I5,  I4,  I3,  I2,  I1,  I0, Init_32, !O6]",
+    "[!I5,  I4,  I3,  I2,  I1,  I0,!Init_32 , O6]"
+  ]
+}
+

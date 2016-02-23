@@ -1,0 +1,75 @@
+\documentclass{itetemplate_en-gb}
+
+\usepackage{xparse}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amssymb}
+\usepackage{rotating}
+\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{menukeys}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{tikz-uml}
+
+%% TODO glossary title
+\makeglossary
+\makeindex
+
+\input{user-defined}
+
+\input{metadata} % !!! do not forget to fill theese in
+\input{glossary} % define all entries for your glossary in there
+\input{acronyms} % define all your acronyms in there
+
+%
+% The document itself
+%
+\begin{document}
+
+\chapter{Introduction}
+
+	\input{sections/problemDescription}
+	%TODO q2d logo	
+	
+	\input{sections/theoreticalBackground}
+	
+\chapter{Description of the Implemented Tool}
+
+	\input{sections/designDecisions}
+	\input{sections/implementedFeatures}
+
+\chapter{Implementation Details}
+	\label{sec-chapter-implementation}
+	
+	\input{sections/implementation-remarks}
+	\input{sections/classesComponentHierarchy}
+	\input{sections/classesDocumentEntry}	
+	
+	
+	\section{Model and View}
+		\label{sec-model-view}
+		
+		\input{sections/modelview-remarks}
+		\input{sections/model-hierarchy}
+		\input{sections/schematic-hierarchy}
+		\input{sections/quantor-interface}
+	
+\chapter{An Example Workflow}
+
+	\input{sections/example-workflow}
+
+\chapter{Summary and Outlook}	
+
+	\input{sections/results}
+	\input{sections/improvements}
+
+	\renewcommand{\bibname}{References}
+	%\bibliographystyle{alpha}
+	\bibliographystyle{bibtex/itealpha}
+	\bibliography{bibtex/literature}
+
+	\appendix
+	\input{appendix}
+\end{document}

@@ -1,0 +1,17 @@
+\begin{tikzpicture}
+%\draw[style=help lines] (0,-1) grid (18,1);
+
+\draw[->, thick] (0,0)--(2,0);
+\draw[rounded corners=10] (2,-0.5) rectangle (5,0.5);
+	\node at (3.5,0) {variable name};
+\draw[->, thick] (5,0)--(7, 0);
+
+% back loop
+\draw[thick](5,0) .. controls (6.25,0) and (6.25,-1.5) .. (5,-1.5);
+\draw[->, thick](5,-1.5)--(4,-1.5);
+\draw(3,-2) rectangle (4,-1);
+	\node at (3.5,-1.5){,};
+\draw[thick](3,-1.5)--(2,-1.5);
+\draw[thick](2,-1.5)  .. controls (0.75,-1.5) and (0.75,0) .. (2,0);
+
+\end{tikzpicture}

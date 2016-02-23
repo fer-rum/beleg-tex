@@ -1,0 +1,48 @@
+\section{The Document Entry Class and its Factory}
+	\label{sec-documentEntry}
+	Section  \ref{sec-basic-interaction} established the management of data in \emph{documents}.
+	Since each of these documents describes a circuit as a whole, it is obvious that a data structure must exist, that can represent the elements of which the circuit is constructed.
+	This is achieved by introducing \emph{document entries}.
+	A \gls{uml}-representation of the classes discussed in the following is given in figure \ref{fig-class-diagram-documentEntry}.	
+	
+	\paragraph{The Environment of Document Entries}
+	Any document entry needs to be associated with exactly one \emph{document}, which in turn might contain an arbitrary number of entries.
+	Amongst each other, entries that belong to the same document can form hierarchies.
+	Like all classes in the application, that might be involved in such a parent-child relationship, the \texttt{DocumentEntry} class inherits from \texttt{QObject}.
+	As an additional feature, this also provides access to \gls{qt}s \emph{signal-slot} syntax, reducing the effort of implementing the communication between class instances notably.
+	Internally, the application is split into a \emph{model}, holding the circuits structure and a \emph{schematic} representation, used by the \gls{ui}.
+	A document entry acts as a controller to the two, subjecting them to changes depending on the operations issued by the user.
+	It therefore is also called a \emph{related entry}.
+	Since depending on the underlying model- and schematic elements, different interactions are possible, each document entry possesses a type which indicates what kind of elements it represents.\footnote{
+	Subclassing \texttt{DocumentEntry} also would have been a viable	option.
+	The projected gains however did not accommodate for the required efforts during the initial design.
+	As always, this might change in the future, should the need arise.
+	}
+	This subdivision is discussed further in section \ref{sec-model-view}.
+	Document entries are aware of the overall \emph{model} and \emph{schematic} indirectly through their parent document, and offer accessors to them for convenience reasons. 
+
+	
+	\paragraph{The \texttt{Identifiable} Helper Class}
+	From the hierarchical structure of documents and their entries, the need to identify them by a name arose.
+	For this reason, a helper class was developed, providing an abstraction for classes that require their instances to be recognized by a unique token.
+	Upon the generation of such an identifiable object, it is only required to provide a \emph{local name}, and an optional parent object.
+	Should the latter not be given, the current object may serve as root of a new hierarchy.
+	A so-called \emph{full ID} consists of a local ID prepended with the name of each parent up to the hierarchies root.
+	
+	To aid with conceptualization, it is helpful to think of a file system, where the local name is only the file or folder name per\-se and the full ID can be compared to an absolute path.
+	
+	A useful result of this approach is the possibility to query any given document for an entries full ID and obtain the corresponding object, if there is one.
+	Also, the \texttt{Identifiable} class creates a central point of validation for all IDs used throughout the application.	
+	
+	\paragraph{The Document Entry Factory}
+	Instantiating document entries requires a lot of secondary tasks, such as ID validation, construction of model- and schematic elements, bookkeeping.
+	To ease the effort and reduce the likelihood of errors, a factory class has been introduced, which takes care of all the matters that are associated with instantiating a \texttt{DocumentEntry}.
+	For this purpose, a set of functions is offered to create entries for each possible type.
+	Since ports are always sub-entries to some component or module interface\footnote{
+		Module interfaces have been introduced in section \ref{sec-visualization-aspects}.	
+	}
+	, they are not instanced independently and therefore the corresponding helper function was omitted here.
+	The default value for any of the IDs is invalid, triggering the factory to generate a valid one as a replacement.
+	Since the user usually does not want to bother with naming everything in advance, this behaviour was deemed desirable.
+	
+	

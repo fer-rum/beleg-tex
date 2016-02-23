@@ -1,0 +1,59 @@
+\section{Classes Involved in the Component Meta-Model}
+	\label{sec-metamodel}
+	The \emph{component meta-model} has been established in section \ref{sec-model-design}.
+	Its implementation can be found in the \texttt{q2d::metamodel}-namespace.
+	Each part of the class hierarchy inherits from \gls{qt}'s \texttt{QObject} and \texttt{QStandardtem}.
+	This is mainly to make use of the model-view capabilities delivered by the framework and ease the representation of the hierarchy in the \gls{ui} considerably.
+
+	\paragraph{Overview over Elements}
+	Everything in the meta-model is considered an \emph{element} of the model.
+	Elements possess a \emph{type}, a \emph{name}, and may have another element as \emph{parent}.
+	The type may be one of those listed in the \emph{element type} enumeration.
+	Setting the name is achieved by using the \texttt{QStandardItem} constructor, while the parent relationship is inherited from \texttt{QObject}, narrowing down the type.
+	
+	The treelike structure of the meta-model is created by the subclass of \emph{hierarchy elements}.
+	Additionally to their name, they also have a \emph{hierarchy name}, which serves as unique identifier, since it includes the names of all parent elements in addition to the elements own name.
+	The principle is similar to absolute path names used in \glspl{os}.\footnote{
+		Later during the implementation, a comparable naming and identification system for component instances had been introduced.
+		Since both systems are very alike it is possible, that they will be merged eventually.
+		The \texttt{Identifiable} class is discussed in section \ref{sec-documentEntry}.
+	}
+	Further, hierarchy elements are restricted to only accept \emph{categories} as parents.
+	The intention is, to avoid that component types contain other component types, or even themselves.
+	A nesting of categories on the other side poses no problem.
+	
+	Since \emph{component types} are the focus of the meta-model, it is obvious, to have a subclass for \emph{component elements}, from which component types can then be composed.
+	Contrary to their superclass, these are restricted to component types as parent elements. 
+	
+	\paragraph{Categories}
+	To keep an overview over many component types, categories have been introduced.
+	They may contain an arbitrary set of \emph{component descriptors} or other sub-categories.
+	In the \gls{ui} representation, categories can be expanded and collapsed by the user to help maintaining an overview or finding certain elements.
+	
+	\paragraph{Component Descriptors}
+	As motivated in section \ref{sec-model-design}, an abstraction into component types was desired.
+	This task is fulfilled by the \texttt{ComponentDescriptor}-class.
+	It acts the as parent element for everything that is needed to describe a component type's behaviour and available ports.
+	Further, information about the visual representation of a component are stored.
+	Instances of this class are derived from the user definitions as discussed in section \ref{sec-user-defined-components}.
+	
+	\paragraph{Port-, Function-, and Configuration Bit Group Descriptors}
+	When creating a component type, sub-descriptors are required.
+	These are also provided by the descriptor files.
+	Connection facilities are covered by \emph{port descriptors}, specifying their direction and the position relative to the component symbols origin.
+	
+	A \gls{pcbd}, as established in sections \ref{sec-definitions} and \ref{sec-functional-behaviour-spec}, is represented by a \emph{function descriptor}.\footnote{
+		Careful readers might note that \glspl{pcbd} are, strictly speaking, no functions at all.
+		This became clear during the work on the assignment, the name stuck however.
+	}
+	The fact that \glspl{pcbd} are given as strings, is reflected in the rather simple constructor.
+
+	Additionally, component types may include \emph{configuration bit groups}.
+	These are given by a name and a number of members, and upon adding them to a \texttt{ComponentDescriptor}-instance, will be expanded into a set of separate \emph{configuration bits}.
+	
+	\paragraph{Configuration Bit Descriptors}
+	Contrary to the other parts of a component descriptor, these are not explicitly described in the respective file but are created by \emph{q2d} to have representative elements for each configuration bit in the component.
+	This becomes useful when generating the solution to the \gls{qbf} problem.
+	
+	
+	

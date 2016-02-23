@@ -1,0 +1,87 @@
+\begin{tikzpicture}
+
+%lut6
+\draw(-30mm, -49mm) rectangle (64mm, 49mm);
+\draw(-39mm, 12.5mm) node{I5};
+\draw(-39mm, 7.5mm) node{I4};
+\draw(-39mm, 2.5mm) node{I3};
+\draw(-39mm, -2.5mm) node{I2};
+\draw(-39mm, -7.5mm) node{I1};
+\draw(-39mm, -12.5mm) node{I0};
+
+\draw(74mm, 0mm) node{O6};
+\draw(74mm, -25mm) node{O5};
+
+% lut1
+\draw(6mm, 11mm) rectangle (34mm, 39mm);
+\draw(10mm, 35mm) node{I4};
+\draw(10mm, 30mm) node{I3};
+\draw(10mm, 25mm) node{I2};
+\draw(10mm, 20mm) node{I1};
+\draw(10mm, 15mm) node{I0};
+
+\draw(22.5mm, 7mm) node {LUT5};
+
+\draw(25mm, 27.5mm) node {Init};
+\draw(25mm, 22.5mm) node {[32\dots63]};
+
+% lut2
+\draw(6mm, -11mm) rectangle (34mm, -39mm);
+\draw(10mm, -15mm) node{I4};
+\draw(10mm, -20mm) node{I3};
+\draw(10mm, -25mm) node{I2};
+\draw(10mm, -30mm) node{I1};
+\draw(10mm, -35mm) node{I0};
+
+\draw(22.5mm, -43mm) node {LUT5};
+
+\draw(25mm, -22.5mm) node {Init};
+\draw(25mm, -27.5mm) node {[0\dots31]};
+
+%cmux
+\draw[fill=gray!30!white](50mm, 7.5mm) -- (50mm, -7.5mm) -- (55mm, -5mm) -- (55mm, 5mm) -- cycle;
+
+%wiring
+	%lut1 -> cmux
+\draw(34mm, 25mm) -- (40mm, 25mm) -- (40mm, 2.5mm) -- (50mm, 2.5mm);
+	%lut2 -> cmux
+\draw(34mm, -25mm) -- (40mm, -25mm) -- (40mm, -2.5mm) -- (50mm, -2.5mm);
+
+	%I0
+\draw(-35mm, -12.5mm) -- (0mm, -12.5mm) -- (0mm, -35mm) -- (6mm, -35mm);
+\draw[fill](0mm, -12.5mm) circle (0.75mm);
+\draw(0mm, -12.5mm) -- (0mm, 15mm) --(6mm, 15mm);
+
+	%I1
+\draw(-35mm, -7.5mm) -- (-5mm, -7.5mm) -- (-5mm, -30mm) -- (6mm, -30mm);
+\draw[fill](-5mm, -7.5mm) circle (0.75mm);
+\draw(-5mm, -7.5mm) -- (-5mm, 20mm) --(6mm, 20mm);
+
+	%I2
+\draw(-35mm, -2.5mm) -- (-10mm, -2.5mm) -- (-10mm, -25mm) -- (6mm, -25mm);
+\draw[fill](-10mm, -2.5mm) circle (0.75mm);
+\draw(-10mm, -2.5mm) -- (-10mm, 25mm) --(6mm, 25mm);
+
+	%I3
+\draw(-35mm, 2.5mm) -- (-15mm, 2.5mm) -- (-15mm, -20mm) -- (6mm, -20mm);
+\draw[fill](-15mm, 2.5mm) circle (0.75mm);
+\draw(-15mm, -2.5mm) -- (-15mm, 30mm) --(6mm, 30mm);
+
+	%I4
+\draw(-35mm, 7.5mm) -- (-20mm, 7.5mm) -- (-20mm, -15mm) -- (6mm, -15mm);
+\draw[fill](-20mm, 7.5mm) circle (0.75mm);
+\draw(-20mm, 7.5mm) -- (-20mm, 35mm) --(6mm, 35mm);
+
+	%I5
+\draw(-35mm, 12.5mm) -- (-25mm, 12.5mm) -- (-25mm, 45mm) -- (52.5mm, 45mm) -- (52.5mm, 6.25mm);
+
+	%O5
+\draw(40mm, -25mm) -- (70mm, -25mm);
+\draw[fill](40mm, -25mm) circle (0.75mm);
+
+	%O6
+\draw(55mm, 0mm) -- (70mm, 0mm);
+
+
+\end{tikzpicture}
+

@@ -1,0 +1,25 @@
+
+
+\documentclass[
+	BCOR1cm,
+	DIV15,
+	fontsize=12pt,%Satzspiegel
+	titlepage,
+	abstract=false,
+	numbers=noenddot,%
+%%	twoside, %% unrecognized option
+	open=right,
+	cleardoublepage=empty,%
+	chapterprefix=false,
+	appendixprefix%
+]{scrreprt}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usepackage{tikz-uml} 
+
+\usepackage[active,pdftex,tightpage]{preview}
+\PreviewEnvironment[]{tikzpicture}
+\PreviewEnvironment[]{pgfpicture}
+\begin{document}
+<>
+\end{document}

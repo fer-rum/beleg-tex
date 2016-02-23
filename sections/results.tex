@@ -1,0 +1,50 @@
+\section{Achieved Results}
+
+	In this writing, the tool \emph{q2d}, its theoretical background and design were presented.
+	
+	\paragraph{Goal}
+	The intention behind this work was to create an application that allows users to easily create a circuit design containing configurable components within a graphical \gls{ui} along with a specification of an intended behaviour.
+	The tool evaluates whether this specification can be fulfilled by a component configuration and, if this is the case, also provides a configuration that solves the posed problem.
+	It was established that this requires the solving of a \gls{qbf} problem and how the design can be described as such.
+	
+	\paragraph{Development and Design Decisions}
+	Initially, it was intended to use \gls{qucs} as a code base and employ a pure \gls{sat} solver for evaluating the designed circuits.
+	This approach turned out to be infeasible due to design issues and the state of \gls{qucs}' code at the time of writing.
+	As a consequence, it was chosen to implement a new tool for the intended purpose.
+	 From the experience made with the earlier attempt, several major design decisions were inferred:
+	 
+	 \begin{itemize}
+	 
+	 \item The application was developed using \gls{qt}.
+	 	Retrospectively, the time invested in getting familiar with this framework seemed to be well invested due to the amount of work saved when dealing with common implementation tasks.
+	 	
+	 \item The \gls{qbf} solver \gls{quantor} has been employed instead of a pure \gls{sat} solver.
+	 	This eradicated the need for intermediate file formats and streamlined the circuit evaluation process considerably.
+	 
+	 \item Components are not hard-coded.
+	 	They instead reside in separate descriptor files, which are easy to write, read and adapt by users.
+	 	
+	 \item Component behaviour is described using boolean formulae or \gls{cnf}.
+	 The same applies to the description of the intended functionality of the circuit.
+	 Allowing different variations of specifying operators allows users to use the notation they prefer.
+	 		 	
+	 \item Automatically generated circuit symbols for components relief the users of providing such for each component type they design.
+	 As a result, custom components can be developed even quicker.
+	 
+	 \end{itemize}
+	
+	\paragraph{Functionality and Appearance}
+	Basic project and document management features are available and users are enabled to import and employ any component they have a descriptor file for.
+	Several visualisation techniques have been employed to allow a faster orientation within the schematic design and improve the perception of relevant information.
+	An emphasis has been put on the presentation of component ports.
+	Additionally, \emph{details on demand} are available for all circuit elements.
+	
+	\paragraph{Implementation Details}
+	The core classes of the application and their interaction with each other have been described.
+	The focus mostly lies on their purpose and concepts.
+	For the \texttt{QuantorInterface} the inner workings have been further elaborated . 
+	It thereby was underlined how the theoretical approach was realized in the application.
+	
+	\paragraph{A Workflow Example}
+	To demonstrate the usage of the tool, the schematic of a \emph{Xilinx Virtex 5} \gls{clb} has been reproduced, implementing the required custom components in the process.
+	 It was shown that a \emph{full adder} could be implemented with such a \gls{clb}, by computing a configuration that solved the posed problem.

@@ -1,0 +1,11 @@
+A lesson learned from the analysis of \gls{qucs} in the early stage of development was, that the separation of the internally kept model from the \gls{ui} representation is imperative to maintainability and extendibility of an application.
+For this reason, \emph{q2d} keeps the structure of the designed circuit independent of the visualization as a schematic. 
+
+To allow changes on the one side to be reflected on the other, document entries have been introduced in section \ref{sec-documentEntry}.
+
+Since \gls{qt} introduces a model-view relationship within its \gls{ui} classes as well, in the following the term \emph{model} will always refer to the circuit representation, if not explicitly stated otherwise.
+
+Due to the amount of classes involved in the discussed area and their fine distinctions, in the following, a class-centred description will be given instead of a full-text presentation.
+This also is intended to help the reader find specific information more quickly.
+
+A \gls{uml} representation of the described model is given in figure \ref{fig-class-diagram-model}.

@@ -1,0 +1,61 @@
+\subsection{The Model Element Hierarchy}
+	\label{sec-model-hierarchy}
+
+\begin{description}
+	\item[Models] belong exclusively to one document each and complementary, each document has exactly one model. 
+	Both objects in this relationship are aware of each other.
+	Viewed hierarchically, the model is subordinate to the document.
+	This is reflected by employing \texttt{QObject}s parent property.
+	It also allows to take advantage of the behaviour that deleting the parent object will trigger the deletion of all children as well, thus avoiding memory leaks.
+	Models consist of a set of \emph{model elements} that may be added via specialized methods. 
+	
+	\item[Model Elements] are first mentioned in section \ref{sec-documentEntry}, where each \texttt{DocumentEntry} instance holds one model element, which in turn considers the entry \emph{related}.
+	Such model element has exactly one model as a hierarchical parent, which is just the model that belongs to the document the related document entry is part of.
+	For convenience reasons, model elements offer access to their related entries ID accessors.
+	
+	It is required, for solving the \gls{qbf} problem, that each model element can yield information about the contained \emph{configuration}, \emph{input} and \emph{node} variables as well as any \glspl{pcbd}\footnote{
+		Again, for historical reasons, the getter is called \texttt{functions()}, even though \glspl{pcbd} are no functions at all.	
+	}.
+	As a default implementation, the returned lists are empty, but sub-classes will override this behaviour, if required.
+	Lastly, a \emph{property map} may be requested, that contains information about the internal state of the model element.
+	This is used for debug purposes as well as for the generation of tool tips by schematic representations.
+	
+	\item[Interfacing Model Elements] form a specialized sub-class which offer the additional capability of managing ports.
+	When queried for node variables, they query each of their ports and yield a collection of the results.
+	
+	\item[Components] are created by the use of a \texttt{ComponentDescriptor}, which was introduced in section \ref{sec-metamodel}.
+	Multiple components may share the same descriptor, effectively making them instances of the same type of component.
+	In addition to the inherited node variable getter, they can also provide configuration variables and \glspl{cbd} as defined by their descriptor.
+	
+	\item[Module Interfaces] are \texttt{InterfacingME}s, that have exactly one port and a direction determining the orientation of the data flow as viewed from the \emph{outside} of the module.
+	As a result, the directions given in the module interface and its port are opposites of each other.
+	
+	\item[Nodes] are any elements that are driven by one signal source and may distribute this signal unaltered.\footnote{
+		Since in some contexts, the terms \emph{driver} and \emph{driven} may be used with different semantics, it is in the following also feasible to read \emph{data source} and \emph{data sink} instead, respectively.	
+	}
+	Currently, the only actual implementation of nodes are ports used for connecting interfacing model elements with each other.
+	Technically, conductors should be considered nodes as well but, at the time of writing, no need has arisen to implement it that way.\footnote{
+		The underlying reason is, that conductors only represent a one-to-one connection, which is fairly trivial.
+		Should these simple conductors be replaced by wire nets as done in other tools, such a net could be validly considered a node and be consequently implemented as such.	
+	}
+	
+	\item[Ports] additionally possess a \emph{direction} that specifies whether data passing the port flows into the interfaced element or out of it.
+	They further provide a custom property map, containing additional information about their connection state.
+
+	\item[Component ports] facilitate the data transfer into and out of components.
+	If queried, they return a node variable, representing themselves.
+	
+	\item[Module ports] are used exclusively by module interfaces.
+	If the instance's \texttt{direction} is \texttt{OUT}, the associated module interface has an \texttt{IN} direction.
+	Therefore, the port is to be represented by an input variable.
+	Otherwise, it will yield an appropriate node variable.
+	
+	\item[Conductors] are intended to connect interfacing elements with each other.
+	Precisely speaking, they transfer data from one node to another.
+	For this reason, they distinguish a sender and a receiver node.
+	While from the senders view, the conductor acts as a driven element, for the receiver, it becomes a driver.
+	While each conductor in the implementation only connects one sender to one receiver, many other tools instead abstract at the level of whole wiring nets.\footnote{
+		It was discussed following these examples but no such changes were made up to the time of writing since it was found not realistic to implement the required changes within the given time frame. Also, the nomenclature of \emph{nodes} would have to change for consistency reasons.
+	}
+	Each conductor yields its sender and receiver as node variables and a $\sigma$-term as defined in equation \ref{eqn-define-sigma}.
+\end{description}

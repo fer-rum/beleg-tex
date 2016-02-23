@@ -1,0 +1,98 @@
+\begin{tikzpicture}
+
+\draw[draw=none] (0, 0) rectangle (52, 34);
+
+\umlclass[x=26, y=30]{QObject}{}{}
+
+\begin{umlpackage}{q2d}
+\umlclass[x=23, y=26]{Document}{}{}
+
+\begin{umlpackage}{model}
+\umlclass[x=15, y=26]{Model}{}{}
+\umlassoc[mult1=1, mult2=1, arg1=parent, arg2=model]
+	{Document}{Model}
+
+\umlclass[x=6, y=26]{ModelElement}{}{}
+\umlassoc[mult1=*, mult2=1, arg1=child, arg2=parent]
+	{ModelElement}{Model}
+
+\end{umlpackage}
+
+\begin{umlpackage}{quantor}
+
+\umlclass[x=17, y=10, type=enum]{VariableType}{
++ CONFIG \\
++ INPUT \\
++ NODE
+}{}
+
+% --- QuantorInterface
+\umlclass[x=26, y=17]{QuantorInterface}{
+- solutions : QList<int>
+}{
+- buildContexts(contextSource : Model*, targetFunction : QString) \\
+- interpreteSolution(result : Result) \\
++ slot\_solveProblem(targetDocument : Doczument*, targetFunction : QString) \\
++ signal\_hasSolution(textualRepresentation : QString, variableMapping : QMap<QString, bool>)
+}
+\umlinherit{QuantorInterface}{QObject}
+\umlVHVdep[stereo=use, pos stereo=1.5, anchor1=130]{QuantorInterface}{Model}
+\umlVHVdep[stereo=use, pos stereo=1.5, anchor1=130]{QuantorInterface}{Document}
+\umlVHVdep[stereo=use, pos stereo=1.5, anchor1=south]{QuantorInterface}{VariableType}
+
+% --- Context
+\umlclass[type=abstract, x=8, y=8]{Context}{}{
++ operator[](name : std::string) : unsigned \\
++ typeOf(var : unsigned) : VariableType
+}
+\umlHVHdep[anchors=east and west, stereo=use, pos stereo=1.5]{Context}{VariableType}
+
+
+% --- QIContext
+\umlclass[x=8, y=17]{QIContext}{
+- lowestIndex : unsigned \\
+- highestIndex : unsigned \\
+- variableMapping : QMap<QString, unsigned> \\
+- typeMapping : QMap<unsigned, VariableType> \\
+- functions : QList<std::string>
+}{
+- assignVariable(varName : QString, type VariableType) \\
++ QIContext(lowestIndex : unsigned, parent : QIContext*) \\
++ addModelElement(element : ModelElement*)
+}
+\umlinherit{QIContext}{Context}
+\umluniaggreg
+	[arg2=contexts, mult2=1..*, mult1=1]
+	{QuantorInterface}{QIContext}
+\umlHVHdep
+	[arm1=-1cm, anchors= west and west, stereo= use, pos stereo=1.5]
+	{QIContext}{ModelElement}
+
+% --- Quantorizer
+\umlclass[x=26, y=8]{Quantorizer}{}{
++ set(ctx : Context*) \\
++ parse(fct : char*) \\
++solve(ol : std::vector<int>\&) : Result
+}
+\umlVHVdep[anchors=south and south, arm1=-1cm, stereo=use, pos stereo=1.5]{Quantorizer}{Context}
+\umldep[anchors=south and north, stereo=use]{QuantorInterface}{Quantorizer}
+
+% --- ParseException
+\umlclass[x=36, y=8]{ParseException}{}{
++ message() : std::string
+}
+\umldep[anchors=east and west, stereo=throw]{Quantorizer}{ParseException}
+
+% --- Result
+\umlclass[x=36, y=12]{Result}{}{
++ isSatisfiable() : bool \\
++ operator char*() : char*
+}
+\umlVHdep[anchors=70 and west, stereo=create, pos stereo=1.5]{Quantorizer}{Result}
+\umlHVdep[anchors=east and north, stereo=use, pos stereo= 1.5]{QuantorInterface}{Result}
+
+
+\end{umlpackage}
+\end{umlpackage}
+
+\end{tikzpicture}

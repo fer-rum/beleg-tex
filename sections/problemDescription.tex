@@ -1,0 +1,29 @@
+\section{Forethoughts}
+
+	\paragraph{Problem Statement}
+	The aim of this work is the creation of a tool that can support hardware designers in evaluating the capabilities of \glspl{clb}.
+	To achieve this, it is necessary to find ways of easily modelling configurable components using a graphical \gls{ui}.
+	It is further required to offer a method to specify the intended behaviour of the whole design, at which point the tool should evaluate whether this specification can be implemented by the \gls{clb}, and by which configuration.
+	
+
+	\paragraph{Outline of the Solution}
+	Initial research made clear that so far no tool exists for supporting this kind of \gls{clb} evaluation in a user friendly way.
+	Attempts to extend already existing projects also proved to be difficult.
+	As a consequence, a new application called \emph{q2d} was designed and implemented for the outlined purpose.
+	It supports project management, \gls{clb}-based circuit design and the evaluation of such.
+	The user is presented with an appealing graphical \gls{ui} and can create custom component types quickly, requiring only simple means.
+	
+	\paragraph{Involved Areas of Computer Science}
+	In addition to the area of design and engineering of large-scale integrated circuits, several other fields of computer science are involved in creating an application capable of dealing with the posed task.
+	As a result, the work at hand might also be worth reading for audiences engaged in these particular areas:
+	
+	\begin{description}
+		\item[Computational Logic] is involved when discussing the theoretical background of the problem and solving the resulting \gls{qbf} problem in section \ref{sec-theoretical-background}.
+		\item[\Gls{ui} Engineering] will be discussed largely in sections \ref{sec-ui-ergonomics}, \ref{sec-visualization-aspects} and \ref{sec-basic-interaction} where the presentation of information and user interaction will be discussed,
+		\item[Software Engineering] comes in mostly during the design phase, when the choice of tools and the internal program structure is explained in sections \ref{sec-languages-frameworks}, \ref{sec-model-design} and its implementation in chapter \ref{sec-chapter-implementation}. 
+	\end{description}
+
+	\paragraph{Application Use Cases}
+	The resulting application will operate on the register transfer level.
+	It is designed to help the user focus on the design task he wishes to perform without distracting him with details regarding the concrete physical implementation of specific circuit elements.
+	Therefore, \emph{q2d} is best suited to develop, test and explain concepts of configurable circuit designs and demonstrate their flexibility and limits.

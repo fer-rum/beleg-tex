@@ -1,0 +1,57 @@
+\subsection{The Schematics Element Hierarchy}
+
+For implementing the \gls{ui}, heavy use of facilities offered by \gls{qt} has been made.
+This especially refers to the graphics framework, which already provides most of the base classes necessary to implement graphical representations and define user interaction.
+Due to the size of this framework, it cannot be explained here in detail.
+The reader might want to consult the \gls{qt} reference %TODO cite qt doc
+in parallel for detailed information on these classes and their interaction.
+When classes are derived from the framework, they often need to override specific functions to achieve custom behaviour.
+These overrides have been omitted in figure \ref{fig-class-diagram-schematic} to avoid cluttering the diagram.
+
+\begin{description}
+
+	\item[Schematic] is a specialization of a \texttt{QGraphicsScene}. 
+	It acts as container for elements to be displayed to the user.
+	Each schematic belongs to exactly one document and visually represents the documents model.
+	In turn, each document holds exactly one schematic, while its entries offer a convenience getter to the latter.
+	
+	\item[Schematic elements] are specializations of \texttt{QGraphicObject}.
+	A hierarchical connection between the schematic and its elements is constructed via the \emph{scene-item relationship}, already provided by \gls{qt}'s graphics framework.
+	A schematic element might have an arbitrary number of sub-items, called \emph{actuals}.
+	These act as building blocks for the graphics displayed to the user.
+	This hierarchical approach ensures that modifications like moving an element on the schematic view, will be applied to the actuals as well, while offering also flexibility to modify only selected sub-items.
+	Further, the \texttt{scene()} getter has been overridden, to return the schematic, instead of a generic \texttt{QGraphicsScene}.
+	A schematic element may provide \texttt{additionalJson()} and a \texttt{specificType()} that are used for serialization purposes.
+	
+	\item[Parent Schematic Elements] are a specialization of schematic elements that has been introduced for type safety reasons.
+	Again, the dependency between these elements and their hierarchical children already is given by means of the graphical framework.
+	
+	\item[Component Graphics Items] represent components on the schematic.
+	They are associated with the appropriate component descriptors, similar to their \texttt{Component} counterparts in the model as described in section \ref{sec-model-hierarchy}.
+	The hierarchy name of the descriptor will be used as the specific type in the \gls{json} files to allow a re-creation of the component graphics item, even if the descriptor should change between saving and loading.
+	
+	\item[Module Interface Graphics Items] visually represent the connections of the circuit to the outside world.
+	The concept has been introduced in section \ref{sec-visualization-aspects}.
+	As stated there, module interfaces feature a \texttt{direction}, which specifies, if data flows into or out of the interfaced circuit.
+	
+	\item[Port Graphic Items] are implementations of the concepts regarding port visualization presented in section \ref{sec-visualization-aspects}.
+	Unlike their counterparts in the model, no specializations had to be made since their representation is agnostic of the element they are interfacing.
+	Since connecting ports with each other is done by dragging a connection from an output port and dropping onto an input port, a set of event handling functions had to be customized to allow this interaction.
+	For the same purpose a distinct \texttt{wireDrawingMode} had to be introduced.
+	
+	\item[Wire Graphics Items] visualize a data-transmitting connection from one port to another.
+	Each wire has a data width of exactly one bit.\footnote{
+		Multiple bit wide connections or bus systems were considered very work intensive and were scheduled for a later release.
+		They can alternatively be emulated by appropriate components, so users do not have to forgo this kind of feature completely.
+	}
+	Wires will be routed automatically.
+	For this purpose, they are internally split into \texttt{WireGraphicsLineItem}s, which will be created in the process.
+	The currently implemented routing algorithms are not very sophisticated yet, but already suffice for a huge amount of circuit designs.\footnote{
+		Especially referring to designs without loop-backs.	
+	}
+	If the start or end port is moved, the wire will be automatically re-routed.
+	When hovered by the mouse, all elements of a wire will highlight to help the user tracking its path.
+	For data persistence, the wire graphics items offer a specialized additional \gls{json} object that contains the full identifiers of the start and end port.
+	Upon loading, the wire is routed again, so that any new algorithms available for this purpose are applied without user intervention.
+
+\end{description}

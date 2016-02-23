@@ -1,0 +1,24 @@
+{
+	"name":"lut2cnf",
+	"ports":
+	[
+		{"name":"x0",	"direction":"in"},
+		{"name":"x1",	"direction":"in"},
+		{"name":"y",	"direction":"out"}
+	],
+	"configBits":
+	[
+		{"name":"c",	"size":4}
+	],
+	"functions":
+	[ 
+		"[ x0,  x1, !c_0,  y]",
+		"[ x0,  x1,  c_0, !y]",
+		"[ x0, !x1, !c_1,  y]",
+		"[ x0, !x1,  c_1, !y]",
+		"[!x0,  x1, !c_2,  y]",
+		"[!x0,  x1,  c_2, !y]",
+		"[!x0, !x1, !c_3,  y]",
+		"[!x0, !x1,  c_3, !y]"
+	]
+}

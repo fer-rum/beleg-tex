@@ -1,0 +1,108 @@
+
+\begin{tikzpicture}
+
+% inputs
+\draw (0mm, -1mm) -- (5mm, -1mm) -- (7.5mm, 0mm) -- (5mm, 1mm) -- (0mm, 1mm) -- cycle;
+\draw (0mm, 4mm) -- (5mm, 4mm) -- (7.5mm, 5mm) -- (5mm, 6mm) -- (0mm, 6mm) -- cycle;
+\draw (0mm, 9mm) -- (5mm, 9mm) -- (7.5mm, 10mm) -- (5mm, 11mm) -- (0mm, 11mm) -- cycle;
+\draw (0mm, 14mm) -- (5mm, 14mm) -- (7.5mm, 15mm) -- (5mm, 16mm) -- (0mm, 16mm) -- cycle;
+\draw (0mm, 19mm) -- (5mm, 19mm) -- (7.5mm, 20mm) -- (5mm, 21mm) -- (0mm, 21mm) -- cycle;
+\draw (0mm, 24mm) -- (5mm, 24mm) -- (7.5mm, 25mm) -- (5mm, 26mm) -- (0mm, 26mm) -- cycle;
+
+\draw (-4mm, 0mm) node {D1};
+\draw (-4mm, 5mm) node {D2};
+\draw (-4mm, 10mm) node {D3};
+\draw (-4mm, 15mm) node {D4};
+\draw (-4mm, 20mm) node {D5};
+\draw (-4mm, 25mm) node {D6};
+
+% lut
+\draw (25mm, 0mm) node {I0};
+\draw (25mm, 5mm) node {I1};
+\draw (25mm, 10mm) node {I2};
+\draw (25mm, 15mm) node {I3};
+\draw (25mm, 20mm) node {I4};
+\draw (25mm, 25mm) node {I5};
+
+\draw (45mm, 10mm) node {O5};
+\draw (45mm, 15mm) node {O6};
+\draw(35mm, -8mm) node{LUT 6-2};
+
+\draw(21mm, -4mm) rectangle (49mm, 29mm);
+
+% dx
+\draw (0mm, -16mm) -- (5mm, -16mm) -- (7.5mm, -15mm) -- (5mm, -14mm) -- (0mm, -14mm) -- cycle;
+\draw (-4mm, -15mm) node {DX};
+
+% cin
+\draw (0mm, -26mm) -- (5mm, -26mm) -- (7.5mm, -25mm) -- (5mm, -24mm) -- (0mm, -24mm) -- cycle;
+\draw (-4mm, -25mm) node {Cin};
+
+% mux
+\draw[fill=gray!30!white](75mm, 30mm) -- (90mm, 30mm) -- (85mm, 35mm) -- (80mm, 35mm) -- cycle;
+
+% cmux
+\draw(65mm, 20mm) -- (80mm, 20mm) -- (75mm, 25mm) -- (70mm, 25mm) -- cycle;
+
+% xor
+\draw[fill=gray!30!white](96mm, 18.5mm) rectangle (104mm, 26.5mm);
+\draw(100mm, 22.5mm) node{=1};
+
+% cmux-d
+\draw(115mm, 5mm) -- (120mm, 10mm) -- (120mm, 25mm) -- (115mm, 30mm) -- cycle;
+
+%cout
+\draw (125mm, 39mm) -- (130mm, 39mm) -- (132.5mm, 40mm) -- (130mm, 41mm) -- (125mm, 41mm) -- cycle;
+\draw (140mm, 40mm) node {Cout};
+
+%dmux
+\draw (125mm, 16.5mm) -- (130mm, 16.5mm) -- (132.5mm, 17.5mm) -- (130mm, 18.5mm) -- (125mm, 18.5mm) -- cycle;
+\draw (140mm, 17.5mm) node {Dmux};
+
+%d
+\draw (125mm, -1mm) -- (130mm, -1mm) -- (132.5mm, 0mm) -- (130mm, 1mm) -- (125mm, 1mm) -- cycle;
+\draw (140mm, 0mm) node {D};
+
+% wiring
+	% inputs -> lut
+\draw(7.5mm, 0mm) -- (21mm, 0mm);
+\draw(7.5mm, 5mm) -- (21mm, 5mm);
+\draw(7.5mm, 10mm) -- (21mm, 10mm);
+\draw(7.5mm, 15mm) -- (21mm, 15mm);
+\draw(7.5mm, 20mm) -- (21mm, 20mm);
+\draw(7.5mm, 25mm) -- (21mm, 25mm);
+	% O5 ->cmux
+\draw[fill] (75mm, 10mm) circle (.75mm);
+\draw(49mm, 10mm) -- (75mm, 10mm) -- (75mm, 20mm);
+	% DX ->cmux
+\draw(7.5mm, -15mm) -- (70mm, -15mm) -- (70mm, 20mm);
+	% cmux -> mux
+\draw(72.5mm, 25mm) -- (72.5mm, 27.5mm) -- (80mm, 27.5mm) -- (80mm, 30mm);
+	% cim -> mux
+\draw(7.5mm, -25mm) -- (85mm, -25mm) -- (85mm, 30mm);
+	% O6 -> mux
+\draw[fill](60mm, 15mm) circle (.75mm);
+\draw(49mm, 15mm) -- (60mm, 15mm) -- (60mm, 32.5mm) -- (77.5mm, 32.5mm);
+	% O6 -> xor
+\draw[fill](90mm, 15mm) circle (.75mm);
+\draw(60mm, 15mm) -- (90mm, 15mm) -- (90mm, 20mm) -- (96mm, 20mm);
+	% Cin -> xor
+\draw[fill](85mm, 25mm) circle (.75mm);
+\draw(85mm, 25mm) -- (96mm, 25mm);
+	% O5 -> cmux-d
+\draw(75mm, 10mm) -- (115mm, 10mm);
+	% O6 -> cmux-d
+\draw(90mm, 15mm) -- (115mm, 15mm);
+	% xor -> cmux-d
+\draw(104mm, 22.5mm) -- (110mm, 22.5mm) -- (110mm, 20mm) -- (115mm, 20mm);
+	% mux -> cout
+\draw(82.5mm, 35mm) -- (82.5mm, 40mm) -- (125mm, 40mm);
+	%mux ->cmux-d
+\draw[fill](110mm, 40mm) circle (.75mm);
+\draw(110mm, 40mm) -- (110mm, 25mm) -- (115mm, 25mm);
+	%O6 -> d
+\draw[fill](110mm, 15mm) circle (.75mm);
+\draw(110mm, 15mm) -- (110mm, 0mm) -- (125mm, 0mm);
+	% cmux-d ->dmux
+\draw(120mm, 17.5mm) -- (125mm, 17.5mm);
+\end{tikzpicture}
